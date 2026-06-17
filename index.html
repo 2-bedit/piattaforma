@@ -1,0 +1,1273 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>2B-Edit® - Piattaforma Cinema & TV (Prototipo Unificato)</title>
+    <!-- Tailwind CSS per il design moderno -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Lexend:wght@400;600;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #0c0204; /* Sfondo scuro bordeaux per abbinarsi al Granata */
+        }
+        .heading-font {
+            font-family: 'Lexend', sans-serif;
+        }
+        .fade-in {
+            animation: fadeIn 0.4s ease-in-out forwards;
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(12px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        /* Stili speciali per il simulatore di smartphone */
+        .phone-container {
+            max-width: 390px;
+            height: 844px;
+            border: 12px solid #2d060d; /* Bordo granata molto scuro */
+            border-radius: 40px;
+            overflow-y: auto;
+            position: relative;
+            background-color: #0c0204;
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.7);
+            margin: 0 auto;
+        }
+        .phone-notch {
+            position: sticky;
+            top: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 140px;
+            height: 25px;
+            background-color: #2d060d;
+            border-bottom-left-radius: 18px;
+            border-bottom-right-radius: 18px;
+            z-index: 100;
+        }
+        /* Scrollbar personalizzata per il simulatore */
+        .phone-container::-webkit-scrollbar {
+            width: 4px;
+        }
+        .phone-container::-webkit-scrollbar-thumb {
+            background-color: rgba(217, 119, 6, 0.3);
+            border-radius: 2px;
+        }
+        
+        /* Animazioni Cinema Intro per lo schermo Smart TV */
+        @keyframes countdown-zoom {
+            0% { transform: scale(2.2); opacity: 0; }
+            10% { opacity: 1; }
+            90% { opacity: 1; }
+            100% { transform: scale(0.9); opacity: 0; }
+        }
+        .animate-countdown {
+            animation: countdown-zoom 1s ease-in-out infinite;
+        }
+        @keyframes credit-roll {
+            0% { transform: translateY(100%); }
+            100% { transform: translateY(-130%); }
+        }
+        .animate-credits {
+            animation: credit-roll 16s linear infinite;
+        }
+        @keyframes scanline {
+            0% { transform: translateY(-100%); }
+            100% { transform: translateY(100%); }
+        }
+        .scanline-effect {
+            animation: scanline 5s linear infinite;
+        }
+    </style>
+</head>
+<body class="min-h-screen flex flex-col selection:bg-amber-600 selection:text-white text-stone-100">
+
+    <!-- BARRA DI STATO SUPERIORE -->
+    <div class="bg-rose-950 text-white text-xs py-2.5 px-4 flex items-center justify-between sticky top-0 z-50 border-b border-rose-900/40 shadow-md">
+        <div class="flex items-center gap-2">
+            <span class="w-2.5 h-2.5 rounded-full bg-amber-500 animate-pulse"></span>
+            <span class="font-semibold tracking-wider uppercase text-[10px] text-amber-400">Prototipo Unificato - 2B-Edit®</span>
+        </div>
+        <div class="flex bg-rose-900/60 rounded-xl p-0.5 border border-rose-800/40">
+            <button onclick="switchView('desktop')" id="btn-view-desktop" class="bg-amber-600 text-white px-3 py-1.5 rounded-lg font-bold text-[11px] flex items-center gap-1.5 transition-all">
+                <i class="fa-solid fa-desktop"></i> PC Desktop
+            </button>
+            <button onclick="switchView('mobile')" id="btn-view-mobile" class="text-rose-200 hover:text-white px-3 py-1.5 rounded-lg font-bold text-[11px] flex items-center gap-1.5 transition-all">
+                <i class="fa-solid fa-mobile-screen-button"></i> Smartphone App
+            </button>
+        </div>
+        <div class="text-[10px] text-amber-500 font-bold hidden md:block uppercase tracking-wider">
+            Polbert Cinema®
+        </div>
+    </div>
+
+    <!-- WRAPPER PRINCIPALE -->
+    <div id="demo-wrapper" class="flex-grow flex flex-col py-4 transition-all duration-300">
+        
+        <!-- CONTENITORE VISTA (Diventa telefono se in modalità mobile) -->
+        <div id="content-viewport" class="w-full">
+
+            <!-- BARRA DI NAVIGAZIONE PRINCIPALE -->
+            <header class="bg-stone-950 border-b border-rose-950/40 sticky top-0 z-40 shadow-lg">
+                <div class="max-w-7xl mx-auto px-6 h-20 flex items-center justify-between">
+                    
+                    <!-- LOGO A SINISTRA (Logo ufficiale 2B-Edit nel cerchietto con bordo d'oro) -->
+                    <div class="flex items-center gap-3 cursor-pointer" onclick="navigateTo('home')">
+                        <div class="relative w-12 h-12 rounded-full overflow-hidden border-2 border-amber-500/80 shadow-md flex items-center justify-center bg-stone-900">
+                            <img src="309458911_200604652309370_6718969091022549075_n.jpg" class="w-full h-full object-cover" alt="Logo 2B-Edit">
+                        </div>
+                        <div class="flex flex-col">
+                            <span class="text-xs font-black tracking-wider text-amber-500 uppercase">2B-Edit®</span>
+                            <span class="text-[9px] text-stone-400 font-medium tracking-tight">Polbert Cinema®</span>
+                        </div>
+                    </div>
+                    
+                    <!-- LINK NAVIGAZIONE RAPIDA -->
+                    <nav class="hidden md:flex items-center gap-6 text-xs font-bold text-stone-300">
+                        <button onclick="navigateTo('home')" class="hover:text-amber-500 transition-colors uppercase tracking-wider">Home Flusso</button>
+                        <button onclick="navigateTo('profile')" class="hover:text-amber-500 transition-colors uppercase tracking-wider">Area Autori</button>
+                        <button onclick="navigateTo('valutatori')" class="hover:text-amber-500 transition-colors uppercase tracking-wider">Area Valutatori</button>
+                    </nav>
+                    
+                    <!-- PROFILO UTENTE LOGGATO A DESTRA (Foto reale di Simone Poletto) -->
+                    <div class="flex items-center gap-3 cursor-pointer" onclick="navigateTo('profile')" id="nav-auth-area">
+                        <div class="text-right leading-tight hidden sm:block">
+                            <p class="text-xs font-extrabold text-stone-100">Simone Poletto</p>
+                            <span class="text-[9px] text-amber-500 font-bold uppercase tracking-wider">Ideatore & Autore</span>
+                        </div>
+                        <div class="relative w-11 h-11 rounded-full overflow-hidden border-2 border-amber-500/80 shadow-md flex items-center justify-center bg-stone-900">
+                            <img src="482214184_523554007442041_5686362404284114126_n.jpg" class="w-full h-full object-cover" alt="Simone Poletto">
+                            <span class="absolute bottom-0.5 right-0.5 bg-emerald-500 border border-stone-950 w-2.5 h-2.5 rounded-full"></span>
+                        </div>
+                    </div>
+                </div>
+            </header>
+
+            <!-- MAIN CONTENT -->
+            <main class="flex-grow">
+
+                <!-- SCHERMATA 1: HOME PAGE D'AUTORE -->
+                <section id="page-home" class="max-w-7xl mx-auto px-4 sm:px-6 py-10 fade-in">
+                    
+                    <!-- HERO TITOLO E FRASE GUIDA -->
+                    <div class="text-center max-w-3xl mx-auto mb-12">
+                        <span class="bg-rose-950/80 text-amber-400 text-[10px] font-black tracking-widest px-3 py-1 rounded-full uppercase border border-amber-500/20 inline-block mb-4">
+                            Rivoluzione Cinematografica Indipendente
+                        </span>
+                        <h1 class="text-3xl sm:text-5xl font-extrabold text-stone-100 tracking-tight mb-4 heading-font">
+                            Il Futuro del Cinema è <span class="text-transparent bg-clip-text bg-gradient-to-r from-amber-400 to-rose-400">Nelle Tue Mani.</span>
+                        </h1>
+                        <p class="text-sm text-stone-400 leading-relaxed font-semibold">
+                            Scopri come 2-bedit accompagna gli autori: valorizzando il merito.
+                        </p>
+                    </div>
+
+                    <!-- CITAZIONE ISPIRAZIONALE DI SIMONE POLETTO -->
+                    <div class="max-w-3xl mx-auto mb-12 px-4">
+                        <div class="bg-gradient-to-r from-rose-950/40 to-stone-950 rounded-2xl p-6 sm:p-8 border-l-4 border-amber-500 shadow-xl relative overflow-hidden border border-rose-950/20">
+                            <i class="fa-solid fa-quote-right absolute right-4 top-4 text-rose-950/30 text-8xl pointer-events-none"></i>
+                            <p class="text-xs sm:text-sm text-stone-300 italic font-medium leading-relaxed relative z-10">
+                                "Non permettere mai a nessuno di dirti che non puoi realizzare qualcosa. Se hai un sogno, devi proteggerlo, crederci e lottare per esso con ogni forza. 2B-Edit® nasce proprio per questo: dare una voce e una forma reale alle storie che gli altri non hanno il coraggio di produrre, abbattendo ogni barriera."
+                            </p>
+                            <div class="mt-4 flex items-center gap-3 relative z-10">
+                                <img src="482214184_523554007442041_5686362404284114126_n.jpg" class="w-10 h-10 rounded-full object-cover border border-amber-500" alt="Simone Poletto Autore">
+                                <div>
+                                    <h4 class="font-bold text-stone-100 text-xs">Simone Poletto</h4>
+                                    <p class="text-[9px] text-amber-500 font-bold uppercase tracking-wider">Ideatore di 2B-Edit® & Fondatore di Polbert Cinema®</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- LE TRE COLONNE DI ACCESSO REINSERITE E STILIZZATE IN GRANATA & ORO -->
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-6 max-w-5xl mx-auto mb-16 px-4">
+                        
+                        <!-- 1. AREA AUTORE -->
+                        <div class="bg-stone-900 rounded-2xl p-6 border border-rose-950/60 shadow-lg flex flex-col items-center text-center hover:border-amber-500/80 hover:scale-[1.02] transition-all">
+                            <div class="bg-rose-950 text-amber-500 w-12 h-12 rounded-xl flex items-center justify-center mb-5 text-lg">
+                                <i class="fa-solid fa-pen-nib"></i>
+                            </div>
+                            <h3 class="font-bold text-stone-100 text-xs uppercase tracking-wider mb-2">Area Autori</h3>
+                            <p class="text-[11px] text-stone-400 leading-relaxed mb-6">Carica i tuoi manoscritti depositati SIAE, analizza le statistiche e controlla il feedback dei giurati.</p>
+                            <button onclick="navigateTo('profile')" class="mt-auto w-full bg-amber-500 hover:bg-amber-400 text-stone-950 font-black py-3 rounded-xl transition-all shadow-md text-xs uppercase tracking-wider">
+                                Accedi Area Autore
+                            </button>
+                        </div>
+
+                        <!-- 2. AREA VALUTATORE -->
+                        <div class="bg-stone-900 rounded-2xl p-6 border border-rose-950/60 shadow-lg flex flex-col items-center text-center hover:border-amber-500/80 hover:scale-[1.02] transition-all">
+                            <div class="bg-rose-950 text-amber-500 w-12 h-12 rounded-xl flex items-center justify-center mb-5 text-lg">
+                                <i class="fa-solid fa-gavel"></i>
+                            </div>
+                            <h3 class="font-bold text-stone-100 text-xs uppercase tracking-wider mb-2">Area Valutatori</h3>
+                            <p class="text-[11px] text-stone-400 leading-relaxed mb-6">Riservata agli studenti delle accademie internazionali di cinema. Compila le schede blindate e ottieni 20€.</p>
+                            <button onclick="navigateTo('valutatori')" class="mt-auto w-full bg-amber-500 hover:bg-amber-400 text-stone-950 font-black py-3 rounded-xl transition-all shadow-md text-xs uppercase tracking-wider">
+                                Accedi Area Giuria
+                            </button>
+                        </div>
+
+                        <!-- 3. AREA PRODUTTORE / MAJOR -->
+                        <div class="bg-stone-900 rounded-2xl p-6 border border-rose-950/60 shadow-lg flex flex-col items-center text-center hover:border-amber-500/80 hover:scale-[1.02] transition-all">
+                            <div class="bg-rose-950 text-amber-500 w-12 h-12 rounded-xl flex items-center justify-center mb-5 text-lg">
+                                <i class="fa-solid fa-building-columns"></i>
+                            </div>
+                            <h3 class="font-bold text-stone-100 text-xs uppercase tracking-wider mb-2">Area Produttori & Major</h3>
+                            <p class="text-[11px] text-stone-400 leading-relaxed mb-6">Database protetto e blindato in "Doppio Cieco". Monitora l'interesse e le trattative di pre-produzione.</p>
+                            <button onclick="openValutazioniModal()" class="mt-auto w-full bg-amber-500 hover:bg-amber-400 text-stone-950 font-black py-3 rounded-xl transition-all shadow-md text-xs uppercase tracking-wider">
+                                Monitora Trattative
+                            </button>
+                        </div>
+
+                    </div>
+
+                    <!-- IL VIAGGIO DELLA TUA OPERA (6 STEP INTERATTIVI IN GRANATA E ORO) -->
+                    <div class="mb-20 max-w-5xl mx-auto">
+                        <div class="text-center mb-8">
+                            <h2 class="text-xs font-black tracking-widest text-amber-500 uppercase mb-2">Il Viaggio della tua Opera</h2>
+                            <p class="text-xs text-stone-400">Clicca sui singoli step per scoprirne il funzionamento</p>
+                        </div>
+                        
+                        <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                            
+                            <!-- STEP 1: AUTORE & SIAE -->
+                            <div onclick="highlightStep(1)" id="step-box-1" class="bg-stone-900 rounded-2xl p-6 border-2 border-rose-950/40 hover:border-amber-500/80 transition-all cursor-pointer shadow-lg relative flex flex-col gap-3">
+                                <span class="absolute top-4 right-4 text-xs font-black text-rose-950 font-mono">01</span>
+                                <div class="bg-rose-950/60 text-amber-500 w-10 h-10 rounded-xl flex items-center justify-center text-lg">
+                                    <i class="fa-solid fa-file-signature"></i>
+                                </div>
+                                <div>
+                                    <h3 class="font-bold text-stone-100 text-xs uppercase tracking-wider mb-1">Step 1: Deposito & SIAE</h3>
+                                    <p class="text-[11px] text-stone-400 leading-relaxed">
+                                        L'autore deposita il testo in SIAE (per tutelare noi e lui dal plagio), paga la quota annuale di 80€ e carica l'opera sul portale.
+                                    </p>
+                                </div>
+                            </div>
+
+                            <!-- STEP 2: GIURIA INTERNAZIONALE (ANTI-FAVORITISMI) -->
+                            <div onclick="highlightStep(2)" id="step-box-2" class="bg-stone-900 rounded-2xl p-6 border-2 border-rose-950/40 hover:border-amber-500/80 transition-all cursor-pointer shadow-lg relative flex flex-col gap-3">
+                                <span class="absolute top-4 right-4 text-xs font-black text-rose-950 font-mono">02</span>
+                                <div class="bg-rose-950/60 text-amber-500 w-10 h-10 rounded-xl flex items-center justify-center text-lg">
+                                    <i class="fa-solid fa-gavel"></i>
+                                </div>
+                                <div>
+                                    <h3 class="font-bold text-stone-100 text-xs uppercase tracking-wider mb-1">Step 2: Giuria Blindata</h3>
+                                    <p class="text-[11px] text-stone-400 leading-relaxed">
+                                        Assegnazione a sorte in "Doppio Cieco" a valutatori di accademie internazionali di cinema fuori regione. 20€ a lettura seria.
+                                    </p>
+                                </div>
+                            </div>
+
+                            <!-- STEP 3: TRATTATIVA MAJOR -->
+                            <div onclick="highlightStep(3)" id="step-box-3" class="bg-stone-900 rounded-2xl p-6 border-2 border-rose-950/40 hover:border-amber-500/80 transition-all cursor-pointer shadow-lg relative flex flex-col gap-3">
+                                <span class="absolute top-4 right-4 text-xs font-black text-rose-950 font-mono">03</span>
+                                <div class="bg-rose-950/60 text-amber-500 w-10 h-10 rounded-xl flex items-center justify-center text-lg">
+                                    <i class="fa-solid fa-handshake"></i>
+                                </div>
+                                <div>
+                                    <h3 class="font-bold text-stone-100 text-xs uppercase tracking-wider mb-1">Step 3: Contratto Major</h3>
+                                    <p class="text-[11px] text-stone-400 leading-relaxed">
+                                        Se il voto supera l'eccellenza, l'opera viene presentata alle Major partner. In caso di acquisto dei diritti, tratteniamo il 10%.
+                                    </p>
+                                </div>
+                            </div>
+
+                            <!-- STEP 4: CROWDFUNDING -->
+                            <div onclick="highlightStep(4)" id="step-box-4" class="bg-stone-900 rounded-2xl p-6 border-2 border-rose-950/40 hover:border-amber-500/80 transition-all cursor-pointer shadow-lg relative flex flex-col gap-3">
+                                <span class="absolute top-4 right-4 text-xs font-black text-rose-950 font-mono">04</span>
+                                <div class="bg-rose-950/60 text-amber-500 w-10 h-10 rounded-xl flex items-center justify-center text-lg">
+                                    <i class="fa-solid fa-coins"></i>
+                                </div>
+                                <div>
+                                    <h3 class="font-bold text-stone-100 text-xs uppercase tracking-wider mb-1">Step 4: Crowdfunding Pilot</h3>
+                                    <p class="text-[11px] text-stone-400 leading-relaxed">
+                                        Se la Major richiede una puntata pilota per sbloccare l'acquisto definitivo, finanziamo la produzione tramite la community.
+                                    </p>
+                                </div>
+                            </div>
+
+                            <!-- STEP 5: FESTIVAL DI RIVOLI -->
+                            <div onclick="highlightStep(5)" id="step-box-5" class="bg-stone-900 rounded-2xl p-6 border-2 border-rose-950/40 hover:border-amber-500/80 transition-all cursor-pointer shadow-lg relative flex flex-col gap-3">
+                                <span class="absolute top-4 right-4 text-xs font-black text-rose-950 font-mono">05</span>
+                                <div class="bg-rose-950/60 text-amber-500 w-10 h-10 rounded-xl flex items-center justify-center text-lg">
+                                    <i class="fa-solid fa-clapperboard"></i>
+                                </div>
+                                <div>
+                                    <h3 class="font-bold text-stone-100 text-xs uppercase tracking-wider mb-1">Step 5: Festival di Rivoli</h3>
+                                    <p class="text-[11px] text-stone-400 leading-relaxed">
+                                        La consacrazione! Presentiamo in anteprima gratuita il Trailer ufficiale all'International Film Festival di Rivoli per fare pubblicità.
+                                    </p>
+                                </div>
+                            </div>
+
+                            <!-- STEP 6: 2B-EDIT TV -->
+                            <div onclick="highlightStep(6)" id="step-box-6" class="bg-stone-900 rounded-2xl p-6 border-2 border-rose-950/40 hover:border-amber-500/80 transition-all cursor-pointer shadow-lg relative flex flex-col gap-3">
+                                <span class="absolute top-4 right-4 text-xs font-black text-rose-950 font-mono">06</span>
+                                <div class="bg-rose-950/60 text-amber-500 w-10 h-10 rounded-xl flex items-center justify-center text-lg">
+                                    <i class="fa-solid fa-tv"></i>
+                                </div>
+                                <div>
+                                    <h3 class="font-bold text-stone-100 text-xs uppercase tracking-wider mb-1">Step 6: Canale Smart TV</h3>
+                                    <p class="text-[11px] text-stone-400 leading-relaxed">
+                                        Monetizzazione streaming continuativa: l'opera finisce su 2B-Edit TV a un canone mensile ridotto di soli 2,50€ per gli abbonati.
+                                    </p>
+                                </div>
+                            </div>
+
+                        </div>
+                    </div>
+
+                    <!-- SPIEGAZIONE INTELLIGENZA ARTIFICIALE EDITORIALE -->
+                    <div class="mb-20 max-w-5xl mx-auto">
+                        <div class="text-center mb-8">
+                            <h2 class="text-xs font-black tracking-widest text-amber-500 uppercase mb-2">Sviluppo Editoriale Assistito</h2>
+                            <p class="text-xs text-stone-400">L'A.I. al servizio della tua opera: facilitiamo il matching senza snaturare l'arte</p>
+                        </div>
+                        
+                        <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                            
+                            <!-- ANALYZER -->
+                            <div class="bg-stone-900 p-6 rounded-2xl border border-rose-950/40 flex flex-col gap-4">
+                                <div class="bg-rose-950/40 text-amber-500 w-10 h-10 rounded-xl flex items-center justify-center text-lg font-bold">
+                                    <i class="fa-solid fa-brain"></i>
+                                </div>
+                                <div>
+                                    <h3 class="font-bold text-stone-100 text-xs uppercase tracking-wider mb-2">AI Script Analyzer</h3>
+                                    <p class="text-[11px] text-stone-400 leading-relaxed">
+                                        <strong>Il tuo Correttore di Bozze Automatico:</strong> Verifica all'istante la formattazione professionale e i punti salienti del testo, offrendoti consigli prima dell'invio ai giurati.
+                                    </p>
+                                </div>
+                            </div>
+
+                            <!-- PITCH GENERATOR -->
+                            <div class="bg-stone-900 p-6 rounded-2xl border border-rose-950/40 flex flex-col gap-4">
+                                <div class="bg-rose-950/40 text-amber-500 w-10 h-10 rounded-xl flex items-center justify-center text-lg font-bold">
+                                    <i class="fa-solid fa-wand-magic-sparkles"></i>
+                                </div>
+                                <div>
+                                    <h3 class="font-bold text-stone-100 text-xs uppercase tracking-wider mb-2">AI Pitch Generator</h3>
+                                    <p class="text-[11px] text-stone-400 leading-relaxed">
+                                        <strong>Il tuo Biglietto da Visita per Hollywood:</strong> Le Major non hanno tempo per leggere subito 100 pagine. Lo strumento estrae in automatico una sinossi di 5 righe folgoranti.
+                                    </p>
+                                </div>
+                            </div>
+
+                            <!-- MARKET MATCHING -->
+                            <div class="bg-stone-900 p-6 rounded-2xl border border-rose-950/40 flex flex-col gap-4">
+                                <div class="bg-rose-950/40 text-amber-500 w-10 h-10 rounded-xl flex items-center justify-center text-lg font-bold">
+                                    <i class="fa-solid fa-chart-line"></i>
+                                </div>
+                                <div>
+                                    <h3 class="font-bold text-stone-100 text-xs uppercase tracking-wider mb-2">AI Market Fit & Matching</h3>
+                                    <p class="text-[11px] text-stone-400 leading-relaxed">
+                                        <strong>Il tuo Bussolotto Intelligente:</strong> Analizza in autonomia lo stile, il genere e le tematiche inviando l'opera esclusivamente alle case di produzione (Major) più affini.
+                                    </p>
+                                </div>
+                            </div>
+
+                        </div>
+                    </div>
+
+                    <!-- MODULO CROWDFUNDING & PAGAMENTO IN GRANATA -->
+                    <div class="bg-gradient-to-b from-stone-900 to-black rounded-3xl p-8 text-white shadow-2xl relative overflow-hidden mb-20 max-w-5xl mx-auto border border-rose-950/40">
+                        <div class="absolute -right-20 -top-20 w-80 h-80 bg-rose-950/20 rounded-full blur-3xl"></div>
+                        
+                        <h2 class="text-xl font-bold mb-8 text-center sm:text-left flex items-center justify-center sm:justify-start gap-2.5">
+                            <i class="fa-solid fa-fire-flame-curved text-amber-500 animate-bounce"></i>
+                            Sosteniamo Pilot, Serie TV, Film, Documentari e Cortometraggi
+                        </h2>
+                        
+                        <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
+                            
+                            <!-- Scheda del Film a Sinistra -->
+                            <div class="lg:col-span-6 bg-stone-900/60 rounded-2xl p-6 border border-rose-950/30 flex flex-col sm:flex-row gap-5 items-center sm:items-start">
+                                <div class="w-24 h-32 bg-stone-950 rounded-xl flex flex-col items-center justify-center text-amber-500 shrink-0 shadow-lg border border-amber-500/10 overflow-hidden relative">
+                                    <img src="logo arsenio.jpg" class="absolute inset-0 w-full h-full object-cover opacity-80" alt="Arsenio Poster">
+                                    <div class="absolute inset-0 bg-gradient-to-t from-black via-transparent to-transparent"></div>
+                                    <span class="absolute bottom-1.5 text-[8px] font-bold tracking-widest text-amber-500 text-center uppercase z-10">PILOT AD ALTO VOTO</span>
+                                </div>
+                                <div class="flex-grow w-full">
+                                    <div class="flex items-center gap-2 mb-1.5 flex-wrap">
+                                        <span class="bg-amber-500/20 text-amber-400 text-[10px] font-bold px-2 py-0.5 rounded-full uppercase">IN CO-PRODUZIONE</span>
+                                        <span class="text-xs text-stone-400 font-semibold">Regia di Simone Poletto</span>
+                                    </div>
+                                    <h3 class="font-bold text-base mb-4 text-stone-100">Opera: "L'Ultimo Frame"</h3>
+                                    
+                                    <div class="flex justify-between text-[11px] font-bold text-stone-300 mb-1.5">
+                                        <span>Raccolti: <strong class="text-amber-500" id="crowdfund-collected">€15.400</strong></span>
+                                        <span>Obiettivo: <strong class="text-stone-100">€20.000</strong></span>
+                                    </div>
+                                    <div class="w-full bg-stone-950 h-3 rounded-full overflow-hidden mb-4 p-0.5 border border-rose-950/40">
+                                        <div id="crowdfund-bar" class="bg-gradient-to-r from-amber-600 to-amber-400 h-full rounded-full transition-all duration-700" style="width: 77%;"></div>
+                                    </div>
+                                    <div class="flex items-center gap-1.5 text-xs text-stone-400 font-semibold">
+                                        <i class="fa-solid fa-users text-amber-500"></i>
+                                        <span id="crowdfund-backers">Sostenitori attivi: 142</span>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Modulo Donazione + Finta Carta di Credito Reale -->
+                            <div class="lg:col-span-6 bg-stone-900 rounded-2xl p-6 text-white shadow-lg border border-rose-950/40 flex flex-col gap-4">
+                                <h4 class="font-bold text-[10px] text-stone-400 uppercase tracking-wider flex items-center justify-between">
+                                    <span>Metodo di Pagamento</span>
+                                    <span class="text-[10px] text-amber-500">PROVA PREVIEW</span>
+                                </h4>
+                                
+                                <!-- Selettore Quota -->
+                                <div class="grid grid-cols-3 gap-2">
+                                    <button onclick="selectAmount(20)" id="btn-amt-20" class="border-2 border-rose-900/60 hover:border-amber-500 py-2.5 rounded-xl font-bold text-stone-300 text-xs transition-all focus:outline-none">€20</button>
+                                    <button onclick="selectAmount(50)" id="btn-amt-50" class="border-2 border-rose-900/60 hover:border-amber-500 py-2.5 rounded-xl font-bold text-stone-300 text-xs transition-all focus:outline-none">€50</button>
+                                    <button onclick="selectAmount(100)" id="btn-amt-100" class="border-2 border-amber-500 bg-rose-950/40 py-2.5 rounded-xl font-bold text-amber-400 text-xs transition-all focus:outline-none">€100</button>
+                                </div>
+
+                                <!-- SELETTORE MODALITÀ (CARTA / PAYPAL) -->
+                                <div class="grid grid-cols-2 gap-2 text-center bg-stone-950 p-1 rounded-xl border border-rose-950/20">
+                                    <button onclick="switchPayMethod('card')" id="pay-btn-card" class="bg-rose-950 text-amber-400 text-[10px] font-black py-1.5 rounded-lg transition-all">
+                                        <i class="fa-regular fa-credit-card mr-1"></i> CARTA DI CREDITO
+                                    </button>
+                                    <button onclick="switchPayMethod('paypal')" id="pay-btn-paypal" class="text-stone-400 text-[10px] font-bold py-1.5 rounded-lg transition-all">
+                                        <i class="fa-brands fa-paypal mr-1"></i> PAYPAL
+                                    </button>
+                                </div>
+
+                                <!-- MODULO DETTAGLI PAYPAL (Inizialmente nascosto) -->
+                                <div id="paypal-details-area" class="hidden bg-stone-950 p-4 rounded-xl border border-rose-950/40 flex flex-col gap-2 text-center">
+                                    <i class="fa-brands fa-paypal text-3xl text-amber-500"></i>
+                                    <p class="text-[10px] text-stone-400 font-semibold leading-tight">Verrai indirizzato al portale sicuro PayPal</p>
+                                    <span class="text-xs text-amber-400 font-black">simone.poletto@polbert.com</span>
+                                </div>
+
+                                <!-- MODULO CARTA DI CREDITO INTERATTIVA -->
+                                <div id="card-details-area" class="flex flex-col gap-3">
+                                    <!-- Carta Virtuale Granata e Oro -->
+                                    <div class="bg-gradient-to-tr from-rose-950 to-amber-950 p-4 rounded-xl border border-amber-500/20 shadow-inner flex flex-col justify-between h-32 relative overflow-hidden">
+                                        <div class="absolute right-0 bottom-0 w-32 h-32 bg-amber-500/5 rounded-full blur-2xl"></div>
+                                        <div class="flex justify-between items-start z-10">
+                                            <i class="fa-solid fa-sim-card text-2xl text-amber-500"></i>
+                                            <span class="text-[9px] font-black text-amber-400 tracking-wider">2B-EDIT PREPAID</span>
+                                        </div>
+                                        <div class="text-sm font-mono tracking-widest text-stone-100 z-10 my-2" id="vcard-number">
+                                            •••• •••• •••• 4321
+                                        </div>
+                                        <div class="flex justify-between items-end z-10 text-[9px] font-mono text-stone-400">
+                                            <div>
+                                                <span class="block text-[8px] text-stone-500 font-sans">INTESTATO</span>
+                                                <span class="text-stone-100" id="vcard-name">SIMONE POLETTO</span>
+                                            </div>
+                                            <div>
+                                                <span class="block text-[8px] text-stone-500 font-sans">SCADENZA</span>
+                                                <span class="text-stone-100" id="vcard-expiry">12/28</span>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <!-- Campi Input della Carta -->
+                                    <div class="grid grid-cols-1 gap-2">
+                                        <input type="text" id="card-name-input" oninput="updateCardVisual()" placeholder="Intestatario della Carta" class="bg-stone-950 border border-rose-950/40 rounded-lg px-3 py-2 text-xs focus:outline-none focus:border-amber-500 text-stone-100 font-semibold">
+                                        <div class="grid grid-cols-3 gap-2">
+                                            <input type="text" id="card-number-input" oninput="updateCardVisual()" placeholder="Numero Carta" maxlength="19" class="col-span-2 bg-stone-950 border border-rose-950/40 rounded-lg px-3 py-2 text-xs focus:outline-none focus:border-amber-500 text-stone-100 font-semibold">
+                                            <input type="text" id="card-exp-input" oninput="updateCardVisual()" placeholder="MM/AA" maxlength="5" class="bg-stone-950 border border-rose-950/40 rounded-lg px-3 py-2 text-xs focus:outline-none focus:border-amber-500 text-stone-100 font-semibold text-center">
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="text-center font-extrabold text-sm text-amber-500 uppercase tracking-wider py-1 border-t border-rose-950/20">
+                                    Sostieni i nuovi progetti
+                                </div>
+
+                                <button onclick="confirmDonation()" class="w-full bg-amber-600 hover:bg-amber-500 text-white font-black py-3 rounded-xl transition-all shadow-md text-xs uppercase tracking-widest">
+                                    Invia Sostegno Economico
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- SEZIONE SMART TV INTERATTIVA -->
+                    <div class="bg-black rounded-3xl p-8 sm:p-12 text-white shadow-2xl relative overflow-hidden mb-20 max-w-5xl mx-auto border border-rose-950/40">
+                        <div class="absolute right-0 bottom-0 w-[500px] h-[500px] bg-amber-600/10 rounded-full blur-[120px] pointer-events-none"></div>
+                        
+                        <div class="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center relative z-10">
+                            <div>
+                                <span class="bg-amber-600 text-white font-extrabold text-[10px] px-3 py-1 rounded-full uppercase tracking-widest inline-block mb-4 animate-pulse">2B-EDIT TV Channel</span>
+                                <h2 class="text-3xl sm:text-4xl font-extrabold tracking-tight heading-font mb-4 text-stone-100">
+                                    Canale TV Attivo 24/24 su Smart TV
+                                </h2>
+                                <p class="text-stone-400 text-xs sm:text-sm leading-relaxed mb-6">
+                                    Tutti i progetti pronti, i cortometraggi, i pilot, i documentari e le web-series caricate dagli utenti verranno proiettate in una griglia di contenuti d'autore, direttamente sulla TV di casa, attraverso la nostra applicazione dedicata per Smart TV.
+                                </p>
+                                <div class="flex flex-wrap gap-4">
+                                    <button onclick="openSmartTVModal()" class="bg-amber-600 hover:bg-amber-500 text-white font-extrabold px-6 py-3.5 rounded-xl transition-all shadow-lg active:scale-95 flex items-center gap-2 text-sm">
+                                        <i class="fa-solid fa-circle-play text-lg"></i> APRI SCHERMO SMART TV
+                                    </button>
+                                </div>
+                            </div>
+                            
+                            <!-- Simulatore TV Fisico -->
+                            <div class="relative flex justify-center">
+                                <div class="w-full max-w-[420px] bg-stone-900 rounded-xl p-3 border-4 border-rose-950/40 shadow-2xl relative">
+                                    <div id="tv-player-screen" onclick="startCinematicIntro()" class="aspect-video bg-black rounded-lg overflow-hidden relative group cursor-pointer border border-rose-950/20">
+                                        
+                                        <!-- Effetto Scanline/Flicker cinematografico -->
+                                        <div class="absolute inset-0 bg-gradient-to-b from-white/5 to-transparent pointer-events-none z-30 scanline-effect" style="height: 10px;"></div>
+                                        
+                                        <!-- DEFAULT POSTER: Stato Iniziale di Attesa -->
+                                        <div id="tv-poster-layer" class="absolute inset-0 flex flex-col items-center justify-center p-4 z-10 transition-all duration-500 bg-stone-950 text-center">
+                                            <i class="fa-solid fa-film text-3xl text-amber-500/80 mb-2.5 animate-pulse"></i>
+                                            <p class="text-[8px] text-amber-500 font-black tracking-widest uppercase mb-1">PROIEZIONE PROVA</p>
+                                            <h4 class="text-[10px] text-stone-300 font-bold heading-font">Premi sullo schermo per avviare l'intro</h4>
+                                            <div class="absolute inset-0 bg-black/40 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
+                                                <div class="bg-amber-600 text-white rounded-full w-12 h-12 flex items-center justify-center shadow-lg">
+                                                    <i class="fa-solid fa-play text-lg ml-1"></i>
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        <!-- RETRO COUNTDOWN LAYER (5... 4... 3... 2... 1...) -->
+                                        <div id="tv-countdown-layer" class="hidden absolute inset-0 bg-black z-20 flex items-center justify-center">
+                                            <div id="tv-countdown-num" class="text-6xl font-black heading-font text-amber-500">5</div>
+                                        </div>
+
+                                        <!-- POLBERT CINEMA SIGLA HD -->
+                                        <div id="tv-presentation-layer" class="hidden absolute inset-0 bg-stone-950 z-20 flex flex-col items-center justify-center p-4">
+                                            <img src="logo polbert HD.jpg" class="h-20 w-auto object-contain mb-1.5 animate-pulse" alt="Logo Polbert Cinema HD">
+                                            <span class="text-[8px] text-amber-500 tracking-widest font-extrabold uppercase">POLBERT CINEMA® PRESENTAZIONE</span>
+                                        </div>
+
+                                        <!-- MOVIE RUNNING LAYER (Arsenio a tutto schermo con dissolvenza fluida) -->
+                                        <div id="tv-movie-layer" class="hidden absolute inset-0 bg-black z-20 flex flex-col justify-end">
+                                            <!-- Poster verticale reale di Arsenio adattato perfettamente al centro -->
+                                            <img src="logo arsenio.jpg" class="absolute inset-0 w-full h-full object-contain pointer-events-none z-0" alt="Arsenio Poster">
+                                            <div class="absolute inset-0 bg-gradient-to-t from-black via-transparent to-black/40 pointer-events-none z-10"></div>
+                                            
+                                            <!-- Titoli di coda scorrevoli reali d'autore -->
+                                            <div class="absolute inset-x-0 top-2 flex flex-col items-center justify-start h-16 overflow-hidden text-[7px] text-stone-300 uppercase tracking-widest font-extrabold z-20">
+                                                <div class="animate-credits flex flex-col gap-1 text-center w-full">
+                                                    <p class="text-amber-500">Regia di Simone Poletto</p>
+                                                    <p>Soggetto: Simone Poletto</p>
+                                                    <p>Sceneggiatura: Simone Poletto</p>
+                                                    <p class="text-rose-400">Canale Ufficiale: 2B-Edit TV</p>
+                                                    <p>Marchio registrato: Polbert Cinema®</p>
+                                                </div>
+                                            </div>
+                                            
+                                            <div class="relative z-20 p-3 bg-black/90 border-t border-rose-950/40">
+                                                <div class="flex justify-between items-center">
+                                                    <div>
+                                                        <p class="text-[7px] text-amber-400 font-extrabold tracking-widest uppercase">TRAILER IN ANTEPRIMA</p>
+                                                        <h3 class="font-extrabold text-xs text-white">Arsenio - The Big Thief</h3>
+                                                        <p class="text-[9px] text-stone-400">Soggetto e Regia: Simone Poletto</p>
+                                                    </div>
+                                                    <span class="bg-amber-600 text-white text-[8px] font-black px-2 py-1 rounded-md">2,50€ / mese</span>
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                    </div>
+                                    <div class="w-16 h-2 bg-rose-950/60 mx-auto mt-2 rounded-full"></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                </section>
+
+                <!-- SCHERMATA 2: PROFILO AUTORE (LA TUA FOTO REALISTICA IN GRANDE) -->
+                <section id="page-profile" class="max-w-7xl mx-auto px-4 sm:px-6 py-10 fade-in hidden">
+                    <div class="grid grid-cols-1 lg:grid-cols-12 gap-8">
+                        
+                        <!-- Colonna Sinistra Autore (5 Colonne) -->
+                        <div class="lg:col-span-5 flex flex-col gap-6">
+                            
+                            <!-- Riquadro Profilo Autore Principale -->
+                            <div class="bg-stone-900 rounded-3xl p-6 shadow-xl border border-rose-950/40 flex flex-col items-center text-center relative overflow-hidden">
+                                <div class="absolute top-0 left-0 right-0 h-24 bg-gradient-to-r from-rose-950 to-amber-950 z-0 opacity-80"></div>
+                                
+                                <div class="relative z-10 mt-8 mb-4">
+                                    <!-- Foto ufficiale Simone Poletto con bordo dorato -->
+                                    <img src="482214184_523554007442041_5686362404284114126_n.jpg" class="w-32 h-32 rounded-full border-4 border-amber-500 object-cover shadow-2xl" alt="Simone Poletto Autore">
+                                    <span class="absolute bottom-1 right-2 bg-emerald-500 border-2 border-stone-900 w-5 h-5 rounded-full"></span>
+                                </div>
+                                
+                                <h2 class="text-2xl font-black text-stone-100 z-10 heading-font flex items-center gap-1.5 justify-center">
+                                    Simone Poletto
+                                    <i class="fa-solid fa-circle-check text-amber-500 text-sm" title="Profilo Certificato"></i>
+                                </h2>
+                                <p class="text-xs font-black text-amber-500 mb-2 z-10 tracking-widest uppercase">Presidente & Autore Polbert Cinema®</p>
+                                <p class="text-xs text-stone-400 mb-6 flex items-center gap-1.5 justify-center z-10 font-bold">
+                                    <i class="fa-regular fa-envelope text-amber-500"></i> simone.poletto@polbert.com
+                                </p>
+
+                                <div class="grid grid-cols-3 gap-4 w-full pt-6 border-t border-rose-950/20">
+                                    <div>
+                                        <span class="block text-xl font-bold text-stone-100">3</span>
+                                        <span class="text-[9px] text-stone-500 font-extrabold uppercase">Opere</span>
+                                    </div>
+                                    <div>
+                                        <span class="block text-xl font-bold text-stone-100">42</span>
+                                        <span class="text-[9px] text-stone-500 font-extrabold uppercase">Feedback</span>
+                                    </div>
+                                    <div>
+                                        <span class="block text-xl font-bold text-stone-100">10 / 10</span>
+                                        <span class="text-[9px] text-stone-500 font-extrabold uppercase">Media Voti</span>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Selezione Genere Preferito -->
+                            <div class="bg-stone-900 rounded-2xl p-6 shadow-xl border border-rose-950/40 flex flex-col gap-3">
+                                <label class="text-[10px] font-bold text-stone-400 uppercase tracking-wider">Seleziona Genere Preferito</label>
+                                <div class="relative">
+                                    <button onclick="toggleDropdown()" id="dropdownBtn" class="w-full flex items-center justify-between bg-rose-950/40 border border-rose-900/60 text-amber-400 font-bold py-3 px-4 rounded-xl hover:bg-rose-950 transition-colors focus:outline-none text-xs uppercase tracking-wider">
+                                        <span class="flex items-center gap-2">
+                                            <i class="fa-solid fa-clapperboard text-amber-500"></i>
+                                            Noir / Thriller
+                                        </span>
+                                        <i id="dropdownArrow" class="fa-solid fa-chevron-down transition-transform duration-200"></i>
+                                    </button>
+                                    
+                                    <div id="dropdownMenu" class="hidden absolute left-0 right-0 mt-2 bg-stone-950 border border-rose-950 rounded-xl shadow-2xl z-20 overflow-hidden divide-y divide-rose-900/20 text-xs">
+                                        <button onclick="selectGenre('Drammatico')" class="w-full text-left px-4 py-3 hover:bg-rose-950 text-stone-200 font-bold transition-colors">
+                                            Drammatico
+                                        </button>
+                                        <button onclick="selectGenre('Thriller')" class="w-full text-left px-4 py-3 hover:bg-rose-950 text-stone-200 font-bold transition-colors">
+                                            Thriller / Giallo
+                                        </button>
+                                        <button onclick="selectGenre('Documentari')" class="w-full text-left px-4 py-3 hover:bg-rose-950 text-stone-200 font-bold transition-colors">
+                                            Documentari d'Autore
+                                        </button>
+                                        <button onclick="selectGenre('Fantascienza')" class="w-full text-left px-4 py-3 hover:bg-rose-950 text-stone-200 font-bold transition-colors">
+                                            Fantascienza (Sci-Fi)
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Manoscritti depositati SIAE -->
+                            <div class="bg-stone-900 rounded-2xl p-6 shadow-xl border border-rose-950/40 flex flex-col gap-4">
+                                <h3 class="text-[10px] font-bold text-stone-400 uppercase tracking-wider">Manoscritti Depositati S.I.A.E.</h3>
+                                
+                                <div onclick="openDocument('Soggetto_L_Ultimo_Frame.pdf')" class="group flex items-center justify-between p-4 border border-rose-950/20 hover:border-amber-500 rounded-xl cursor-pointer bg-stone-950 hover:bg-rose-950/20 transition-all">
+                                    <div class="flex items-center gap-3">
+                                        <div class="bg-rose-950 text-amber-500 p-2.5 rounded-lg group-hover:scale-105 transition-transform">
+                                            <i class="fa-solid fa-file-pdf text-xl"></i>
+                                        </div>
+                                        <div>
+                                            <h4 class="font-bold text-stone-100 text-xs group-hover:text-amber-400 transition-colors">Soggetto_L_Ultimo_Frame.pdf</h4>
+                                            <p class="text-[10px] text-stone-400">Dimensione: 1.2 MB • Clicca per leggere</p>
+                                        </div>
+                                    </div>
+                                    <i class="fa-solid fa-chevron-right text-stone-500 group-hover:text-amber-500 group-hover:translate-x-1 transition-all"></i>
+                                </div>
+
+                                <div onclick="openDocument('Sceneggiatura_Arsenio.pdf')" class="group flex items-center justify-between p-4 border border-rose-950/20 hover:border-amber-500 rounded-xl cursor-pointer bg-stone-950 hover:bg-rose-950/20 transition-all">
+                                    <div class="flex items-center gap-3">
+                                        <div class="bg-rose-950 text-amber-500 p-2.5 rounded-lg group-hover:scale-105 transition-transform">
+                                            <i class="fa-solid fa-file-pdf text-xl"></i>
+                                        </div>
+                                        <div>
+                                            <h4 class="font-bold text-stone-100 text-xs group-hover:text-amber-400 transition-colors">Sceneggiatura_Arsenio.pdf</h4>
+                                            <p class="text-[10px] text-stone-400">Dimensione: 4.8 MB • Clicca per leggere</p>
+                                        </div>
+                                    </div>
+                                    <i class="fa-solid fa-chevron-right text-stone-500 group-hover:text-amber-500 group-hover:translate-x-1 transition-all"></i>
+                                </div>
+                            </div>
+
+                        </div>
+
+                        <!-- Colonna Destra Giuria (7 Colonne) -->
+                        <div class="lg:col-span-7 flex flex-col gap-6">
+                            <!-- Box Intestazione Giuria -->
+                            <div class="bg-gradient-to-r from-rose-950 to-stone-900 rounded-2xl p-6 text-white shadow-xl border border-rose-950/40 flex items-center justify-between">
+                                <div>
+                                    <h2 class="text-base font-bold flex items-center gap-2 heading-font text-stone-100">
+                                        <i class="fa-solid fa-gavel text-amber-500"></i> 
+                                        Giuria di Valutazione Accademie Internazionali
+                                    </h2>
+                                    <p class="text-[11px] text-stone-400 mt-1">Studenti dell'ultimo anno di cinema dedicati alla critica tecnica e alla valutazione delle opere.</p>
+                                </div>
+                                <button onclick="openValutazioniModal()" class="bg-amber-500 text-stone-950 hover:bg-amber-400 font-extrabold text-[10px] px-3 py-1.5 rounded-full uppercase tracking-wider transition-all hover:scale-105 shadow-md">
+                                    Monitoraggio Attivo <i class="fa-solid fa-arrow-up-right-from-square ml-1"></i>
+                                </button>
+                            </div>
+
+                            <!-- Lista Feedback Giurati -->
+                            <div class="flex flex-col gap-4">
+                                <div class="bg-stone-900 rounded-2xl p-6 shadow-xl border border-rose-950/40 flex flex-col gap-4 relative overflow-hidden">
+                                    <div class="absolute right-0 top-0 bg-amber-500 text-stone-950 font-black text-[10px] px-4 py-1 rounded-bl-xl tracking-wider uppercase">
+                                        TOP SCRIPTLIST
+                                    </div>
+                                    <div class="flex items-center justify-between">
+                                        <div class="flex items-center gap-3">
+                                            <div class="w-11 h-11 rounded-full bg-rose-950 border border-rose-900 flex items-center justify-center font-bold text-amber-500 text-xs">EB</div>
+                                            <div>
+                                                <h4 class="font-bold text-stone-100 text-xs">Elena Bianchi</h4>
+                                                <p class="text-[10px] text-stone-500">Giurato Certificato - NFTS Londra</p>
+                                            </div>
+                                        </div>
+                                        <div class="flex flex-col items-end">
+                                            <div class="flex items-center gap-1 bg-amber-500/10 text-amber-400 px-3 py-1 rounded-lg text-xs font-black">
+                                                <i class="fa-solid fa-star"></i> VOTO: 10 / 10
+                                            </div>
+                                            <span class="text-[9px] text-amber-500 font-bold mt-1">Capolavoro Noir</span>
+                                        </div>
+                                    </div>
+                                    <div class="bg-stone-950 p-4 rounded-xl border border-rose-950/40 shadow-inner">
+                                        <p class="text-xs sm:text-sm text-stone-300 leading-relaxed font-semibold">
+                                            "La sceneggiatura di **Arsenio** firmata da Simone Poletto è un vero e proprio capolavoro della suspense contemporanea. La struttura drammaturgica è un meccanismo ad orologeria perfetto: la tensione narrativa cresce pagina dopo pagina, supportata da dialoghi taglienti, moderni e pronti per la cinepresa."
+                                        </p>
+                                    </div>
+                                    <div class="flex items-center gap-4 text-[11px] font-semibold text-stone-400 pt-2 border-t border-rose-950/20">
+                                        <button onclick="toggleLike(this)" class="hover:text-amber-500 flex items-center gap-1.5 transition-colors text-amber-500">
+                                            <i class="fa-solid fa-thumbs-up"></i> Utile (<span class="like-count">142</span>)
+                                        </button>
+                                        <span class="ml-auto text-stone-500 text-[10px]">Appena Valutata</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                    </div>
+                </section>
+
+                <!-- SCHERMATA 3: AREA VALUTATORI ACCADEMIE (DAMS & SCUOLE INTERNAZIONALI) -->
+                <section id="page-valutatori" class="max-w-7xl mx-auto px-4 sm:px-6 py-10 fade-in hidden">
+                    <div class="max-w-3xl mx-auto bg-stone-900 rounded-3xl p-8 border border-rose-950/40 shadow-2xl">
+                        <div class="text-center mb-8 border-b border-rose-950/20 pb-6">
+                            <span class="bg-amber-500/10 text-amber-400 text-[10px] font-black tracking-widest px-3 py-1 rounded-full uppercase border border-amber-500/20 inline-block mb-3">
+                                Area Riservata Giurati Cinema
+                            </span>
+                            <h2 class="text-2xl font-black text-stone-100 heading-font uppercase tracking-wider">Compilazione Scheda di Valutazione</h2>
+                            <p class="text-xs text-stone-400 mt-2">
+                                Ogni lettura con approvazione della scheda dettagliata ti riconosce un compenso di <strong>€20,00</strong>. Il sistema di "Doppio Cieco" esclude automaticamente favoritismi territoriali.
+                            </p>
+                        </div>
+
+                        <!-- Form Valutatore Interattivo -->
+                        <form id="evaluation-sheet-form" onsubmit="submitEvaluationSheet(event)" class="space-y-6">
+                            
+                            <!-- DATI BLINDATI DELL'OPERA -->
+                            <div class="bg-stone-950 p-4 rounded-2xl border border-rose-950/40 grid grid-cols-2 gap-4 text-xs font-semibold">
+                                <div>
+                                    <span class="block text-[9px] text-stone-500 uppercase">Codice Opera Assegnata</span>
+                                    <strong class="text-amber-500">#OPERA_ARSENIO_4892</strong>
+                                </div>
+                                <div>
+                                    <span class="block text-[9px] text-stone-500 uppercase">Provenienza Giurato</span>
+                                    <strong class="text-stone-300">NFTS Londra (Estero) - ANONIMO</strong>
+                                </div>
+                            </div>
+
+                            <!-- 1. ANALISI PERSONAGGI (ANALISI DETTAGLIATA OBBLIGATORIA) -->
+                            <div class="flex flex-col gap-2">
+                                <label class="text-[10px] font-black text-amber-500 uppercase tracking-widest">1. Analisi Approfondita dei Personaggi (Minimo 100 caratteri)</label>
+                                <textarea required id="eval-characters" rows="3" placeholder="Descrivi lo sviluppo psicologico, la coerenza emotiva e le relazioni tra i protagonisti..." class="w-full bg-stone-950 border border-rose-950/40 rounded-xl px-4 py-3 text-xs focus:outline-none focus:border-amber-500 text-stone-100 font-semibold leading-relaxed"></textarea>
+                            </div>
+
+                            <!-- 2. ANALISI DEI NODI DI TRAMA -->
+                            <div class="flex flex-col gap-2">
+                                <label class="text-[10px] font-black text-amber-500 uppercase tracking-widest">2. Analisi dei Nodi di Trama e Suspense (Minimo 100 caratteri)</label>
+                                <textarea required id="eval-plot" rows="3" placeholder="Analizza i punti di svolta, la suspense cinematografica e la tenuta del ritmo..." class="w-full bg-stone-950 border border-rose-950/40 rounded-xl px-4 py-3 text-xs focus:outline-none focus:border-amber-500 text-stone-100 font-semibold leading-relaxed"></textarea>
+                            </div>
+
+                            <!-- 3. VALUTAZIONE DELLO STILE E DEI DIALOGHI -->
+                            <div class="flex flex-col gap-2">
+                                <label class="text-[10px] font-black text-amber-500 uppercase tracking-widest">3. Valutazione dello Stile e dei Dialoghi (Minimo 100 caratteri)</label>
+                                <textarea required id="eval-style" rows="3" placeholder="Analizza la freschezza e la ritmica dei dialoghi, lo stile noir/drammatico e l'adattabilità cinematografica..." class="w-full bg-stone-950 border border-rose-950/40 rounded-xl px-4 py-3 text-xs focus:outline-none focus:border-amber-500 text-stone-100 font-semibold leading-relaxed"></textarea>
+                            </div>
+
+                            <!-- VOTO FINALE E CONFERMA -->
+                            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 items-center pt-4 border-t border-rose-950/20">
+                                <div>
+                                    <label class="block text-[10px] text-stone-400 uppercase tracking-widest mb-1.5 font-bold">Voto Finale Qualitativo (Da 1 a 10)</label>
+                                    <select id="eval-score" required class="w-full bg-stone-950 border border-rose-950/40 rounded-xl px-4 py-3 text-xs focus:outline-none focus:border-amber-500 font-bold text-amber-500">
+                                        <option value="10">Voto: 10/10 (Capolavoro da Major)</option>
+                                        <option value="9">Voto: 9/10 (Eccellente con Trattativa)</option>
+                                        <option value="8">Voto: 8/10 (Molto Forte)</option>
+                                        <option value="7">Voto: 7/10 (Interessante)</option>
+                                        <option value="6">Voto: 6/10 (Sufficiente)</option>
+                                    </select>
+                                </div>
+                                <div class="pt-5">
+                                    <button type="submit" class="w-full bg-amber-600 hover:bg-amber-500 text-white font-black py-3 rounded-xl transition-all shadow-md text-xs uppercase tracking-widest">
+                                        Approva & Ricevi 20€ Compenso
+                                    </button>
+                                </div>
+                            </div>
+
+                        </form>
+                    </div>
+                </section>
+
+            </main>
+
+            <!-- FOOTER -->
+            <footer class="bg-stone-950 border-t border-rose-950/40 py-8 mt-12">
+                <div class="max-w-7xl mx-auto px-6 text-center text-xs text-stone-500 flex flex-col sm:flex-row items-center justify-between gap-4">
+                    <div class="flex items-center gap-2.5">
+                        <img src="309458911_200604652309370_6718969091022549075_n.jpg" class="h-8 w-auto object-contain rounded" alt="Logo 2B-Edit Footer">
+                        <span>© 2026 <strong>2B-Edit®</strong>. Tutti i diritti riservati. <br class="sm:hidden"> Prodotto e gestito da <strong>Polbert Cinema®</strong>. Marchio Registrato.</span>
+                    </div>
+                    <div class="flex gap-4">
+                        <a href="#" class="hover:text-stone-300">Privacy Policy</a>
+                        <a href="#" class="hover:text-stone-300">Termini di Servizio</a>
+                        <a href="#" class="hover:text-stone-300">S.I.A.E. Info</a>
+                    </div>
+                </div>
+            </footer>
+
+        </div>
+    </div>
+
+    <!-- MODALE VALUTAZIONI ATTIVE ( Alessandro Rossi & Amazon Trattative ) -->
+    <div id="valutazioniModal" class="hidden fixed inset-0 bg-stone-950/90 backdrop-blur-md z-50 flex items-center justify-center p-4">
+        <div class="bg-stone-900 w-full max-w-4xl rounded-3xl overflow-hidden shadow-2xl border border-rose-950/40 flex flex-col h-[680px] relative">
+            
+            <div class="p-5 border-b border-rose-950/20 flex items-center justify-between bg-black text-white">
+                <div class="flex items-center gap-3">
+                    <img src="309458911_200604652309370_6718969091022549075_n.jpg" class="h-8 w-auto object-contain rounded" alt="2B-Edit Logo">
+                    <span class="text-amber-500 font-extrabold text-sm tracking-wider heading-font">SCHEDA VALUTAZIONE ATTIVA #83940</span>
+                </div>
+                <button onclick="closeValutazioniModal()" class="text-stone-400 hover:text-white transition-colors bg-stone-800 p-2 rounded-full">
+                    <i class="fa-solid fa-xmark text-lg"></i>
+                </button>
+            </div>
+
+            <div class="flex-grow overflow-y-auto p-6 bg-stone-950 space-y-6">
+                
+                <!-- Sezione: Alessandro Rossi (DAMS Torino) -->
+                <div class="bg-stone-900 p-6 rounded-2xl shadow-sm border border-rose-950/20">
+                    <div class="flex items-center justify-between mb-4 flex-wrap gap-2">
+                        <div class="flex items-center gap-3">
+                            <div class="w-12 h-12 bg-gradient-to-tr from-rose-950 to-amber-950 rounded-full flex items-center justify-center text-amber-500 text-base font-bold shadow-sm">
+                                AR
+                            </div>
+                            <div>
+                                <h3 class="font-bold text-stone-100 text-sm">Alessandro Rossi</h3>
+                                <p class="text-xs text-stone-400 font-medium">Giurato Certificato - DAMS Torino • Corso di Critica & Sceneggiatura</p>
+                            </div>
+                        </div>
+                        <div class="flex items-center gap-1 bg-amber-500/10 text-amber-400 px-3 py-1.5 rounded-xl font-black text-xs">
+                            <i class="fa-solid fa-circle-check text-amber-500"></i> VALUTAZIONE: 10 / 10
+                        </div>
+                    </div>
+
+                    <div class="grid grid-cols-2 sm:grid-cols-4 gap-3 mb-4 text-center">
+                        <div class="bg-stone-950 p-2.5 rounded-xl border border-rose-950/10">
+                            <span class="block text-[10px] text-stone-500 font-bold uppercase">Struttura</span>
+                            <strong class="text-stone-300 text-sm">10 / 10</strong>
+                        </div>
+                        <div class="bg-stone-950 p-2.5 rounded-xl border border-rose-950/10">
+                            <span class="block text-[10px] text-stone-500 font-bold uppercase">Originalità</span>
+                            <strong class="text-stone-300 text-sm">10 / 10</strong>
+                        </div>
+                        <div class="bg-stone-950 p-2.5 rounded-xl border border-rose-950/10">
+                            <span class="block text-[10px] text-stone-500 font-bold uppercase">Dialoghi</span>
+                            <strong class="text-stone-300 text-sm">10 / 10</strong>
+                        </div>
+                        <div class="bg-stone-950 p-2.5 rounded-xl border border-rose-950/10">
+                            <span class="block text-[10px] text-stone-500 font-bold uppercase">Distribuzione</span>
+                            <strong class="text-stone-300 text-sm">10 / 10</strong>
+                        </div>
+                    </div>
+
+                    <div class="bg-stone-950 p-4 rounded-xl border border-rose-950/40 text-xs sm:text-sm text-stone-300 leading-relaxed italic">
+                        "La sceneggiatura di **Arsenio**, ideata da Simone Poletto, dimostra un potenziale distributivo strabiliante. Alessandro Rossi, studente dell'ateneo partner di Torino, ha promosso il progetto con il massimo dei voti. La tension del noir d'autore si unisce ad una ritmica commerciale degna delle produzioni di altissimo livello. È un'opera pronta per l'acquisizione diretta."
+                    </div>
+                </div>
+
+                <!-- Sezione: Trattative Major (Amazon Prime) -->
+                <div class="bg-gradient-to-tr from-rose-950 to-stone-950 p-6 rounded-2xl shadow-md border border-rose-950/40 text-white relative overflow-hidden">
+                    <div class="absolute -right-12 -bottom-12 w-48 h-48 bg-amber-500/10 rounded-full blur-2xl pointer-events-none"></div>
+                    
+                    <div class="flex items-center justify-between mb-4 flex-wrap gap-4 relative z-10">
+                        <div class="flex items-center gap-3">
+                            <div class="w-10 h-10 bg-white rounded-lg flex items-center justify-center p-1 border border-rose-950/40">
+                                <img src="download amazon.jpeg" class="w-full h-full object-contain" alt="Amazon Prime">
+                            </div>
+                            <div>
+                                <h3 class="font-bold text-sm tracking-wide">Major Streamer Internazionale</h3>
+                                <p class="text-[10px] text-stone-400 font-medium">Dipartimento Acquisizioni Film d'Autore & Distribuzione</p>
+                            </div>
+                        </div>
+                        <span class="bg-amber-500/20 text-amber-400 font-extrabold text-[9px] px-3 py-1 rounded-full border border-amber-500/30 animate-pulse uppercase tracking-wider">
+                            VALUTAZIONE TRATTATIVA
+                        </span>
+                    </div>
+
+                    <div class="bg-stone-900 p-5 rounded-xl border border-rose-950/40 flex items-center gap-5">
+                        <div class="bg-amber-50 text-stone-950 w-14 h-14 rounded-full flex items-center justify-center text-3xl shrink-0 shadow-lg animate-bounce">
+                            👍
+                        </div>
+                        <div>
+                            <h4 class="font-bold text-xs sm:text-sm text-amber-400 uppercase tracking-wider mb-1">INTERESSE PRE-CONFERMATO (Pollice in Su!)</h4>
+                            <p class="text-xs text-stone-300 leading-relaxed">
+                                Il dipartimento acquisizioni ha completato la lettura dei manoscritti di **Arsenio** con esito eccellente. È stato rilasciato il **parere favorevole all'acquisizione dei diritti** per l'avvio ufficiale della pre-produzione!
+                            </p>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+
+            <div class="p-4 border-t border-rose-950/20 bg-stone-900 flex justify-end">
+                <button onclick="closeValutazioniModal()" class="bg-stone-950 text-white hover:bg-stone-850 text-xs font-bold px-6 py-2.5 rounded-xl transition-all shadow-md">
+                    Chiudi Scheda di Monitoraggio
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- SMART TV MODAL -->
+    <div id="smartTvModal" class="hidden fixed inset-0 bg-black/95 backdrop-blur-md z-50 flex items-center justify-center p-4">
+        <div class="bg-stone-950 w-full max-w-5xl rounded-3xl overflow-hidden shadow-2xl border border-rose-950/40 flex flex-col h-[650px] relative">
+            
+            <div class="p-6 border-b border-rose-950/20 flex items-center justify-between bg-black">
+                <div class="flex items-center gap-3">
+                    <span class="text-amber-500 font-extrabold text-sm tracking-widest heading-font">2B-EDIT® SMART TV</span>
+                    <span class="text-xs bg-stone-900 text-stone-400 px-2.5 py-0.5 rounded-full border border-rose-950/20">Canale Indipendente</span>
+                </div>
+                <button onclick="closeSmartTVModal()" class="text-stone-400 hover:text-white transition-colors bg-stone-900 p-2 rounded-full border border-rose-950/20">
+                    <i class="fa-solid fa-xmark text-lg"></i>
+                </button>
+            </div>
+
+            <div class="flex-grow overflow-y-auto p-8 text-white space-y-8">
+                <div class="bg-gradient-to-r from-stone-900 to-black p-8 rounded-2xl border border-rose-950/20 relative overflow-hidden flex flex-col justify-end h-72">
+                    <img src="logo arsenio.jpg" class="absolute inset-0 w-full h-full object-cover opacity-25 pointer-events-none filter grayscale-[10%]" alt="Simone Poletto TV Film Hero">
+                    <div class="relative z-10 space-y-3 max-w-xl">
+                        <span class="text-[9px] bg-amber-500 text-stone-950 px-2 py-0.5 rounded font-extrabold tracking-wider uppercase">IN EVIDENZA SU SMART TV</span>
+                        <h3 class="text-2xl sm:text-3xl font-extrabold heading-font text-stone-100">Arsenio - Sceneggiatura a 10 Stelle</h3>
+                        <p class="text-xs text-slate-300">Speciale produzione filmata Polbert Cinema® con la sceneggiatura d'eccellenza di Simone Poletto. Un thriller noir moderno acclamato all'unanimità dai giudici.</p>
+                        <button onclick="showToast('Avvio della trasmissione cinematografica di Arsenio...')" class="bg-white text-black font-extrabold text-xs px-5 py-2.5 rounded-lg flex items-center gap-2 hover:bg-stone-200 transition-colors">
+                            <i class="fa-solid fa-play"></i> RIPRODUCI ORA
+                        </button>
+                    </div>
+                </div>
+
+                <div class="space-y-4">
+                    <h4 class="font-extrabold text-sm tracking-wider uppercase text-stone-500">In Proiezione 24/24 su 2B-Edit® TV</h4>
+                    <div class="grid grid-cols-2 sm:grid-cols-4 gap-4">
+                        <div class="bg-stone-900 p-4 rounded-xl border border-rose-950/20 flex flex-col gap-2 hover:scale-105 transition-all cursor-pointer">
+                            <div class="aspect-video bg-black rounded-lg flex items-center justify-center relative overflow-hidden">
+                                <span class="text-xs font-bold text-stone-400">PILOT 1</span>
+                                <div class="absolute top-2 left-2 bg-amber-500 text-stone-950 text-[8px] font-bold px-1 rounded">LIVE</div>
+                            </div>
+                            <span class="text-xs font-bold text-stone-200">Arsenio - Web Series</span>
+                            <span class="text-[10px] text-stone-500">Genere: Noir / Thriller</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- S.I.A.E. PDF VIEW MODAL -->
+    <div id="pdfModal" class="hidden fixed inset-0 bg-stone-950/80 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+        <div class="bg-stone-900 rounded-2xl w-full max-w-2xl overflow-hidden shadow-2xl flex flex-col h-[550px] border border-rose-950/40">
+            <div class="p-4 border-b border-rose-950/20 flex items-center justify-between bg-stone-950 text-white">
+                <div class="flex items-center gap-2">
+                    <i class="fa-solid fa-file-pdf text-amber-500 text-lg"></i>
+                    <span id="modalTitle" class="font-semibold text-sm">Visualizzatore S.I.A.E. PDF</span>
+                </div>
+                <button onclick="closeModal()" class="text-stone-400 hover:text-white transition-colors">
+                    <i class="fa-solid fa-xmark text-lg"></i>
+                </button>
+            </div>
+            <div class="flex-grow p-8 bg-stone-950 flex flex-col items-center justify-center text-center">
+                <div class="bg-stone-900 p-6 rounded-2xl shadow-md border border-rose-950/40 flex flex-col items-center gap-4 max-w-sm">
+                    <i class="fa-solid fa-book-open text-amber-500 text-5xl"></i>
+                    <div>
+                        <h3 class="font-bold text-stone-100 text-sm" id="documentName">NomeFile.pdf</h3>
+                        <p class="text-[11px] text-stone-500 mt-1">Simulazione Lettura Soggetto / Sceneggiatura Depositata</p>
+                    </div>
+                    <button onclick="closeModal()" class="w-full bg-amber-600 text-white text-xs font-semibold py-2.5 rounded-lg hover:bg-amber-500 transition-colors">
+                        Chiudi Anteprima
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- NOTIFICATION TOAST -->
+    <div id="toastNotification" class="hidden fixed bottom-6 right-6 bg-stone-950 text-stone-100 px-6 py-4 rounded-2xl shadow-2xl z-50 border border-rose-950/40 flex items-center gap-3 max-w-md">
+        <div class="bg-amber-500 text-stone-950 rounded-full w-8 h-8 flex items-center justify-center shrink-0">
+            <i class="fa-solid fa-circle-info"></i>
+        </div>
+        <div>
+            <p id="toastMessage" class="text-xs font-semibold">Messaggio di notifica</p>
+        </div>
+    </div>
+
+    <!-- LOGICA JAVASCRIPT DEL PROTOTIPO -->
+    <script>
+        let selectedDonationAmount = 100;
+        let currentViewMode = 'desktop';
+        let currentPayMethod = 'card';
+        let tvTimeouts = [];
+
+        function switchView(mode) {
+            currentViewMode = mode;
+            const viewport = document.getElementById('content-viewport');
+            const btnDesktop = document.getElementById('btn-view-desktop');
+            const btnMobile = document.getElementById('btn-view-mobile');
+
+            if (mode === 'mobile') {
+                viewport.className = "phone-container shadow-2xl relative";
+                if (!document.getElementById('mobile-notch-id')) {
+                    const notch = document.createElement('div');
+                    notch.id = 'mobile-notch-id';
+                    notch.className = 'phone-notch';
+                    viewport.insertBefore(notch, viewport.firstChild);
+                }
+                btnMobile.className = "bg-amber-600 text-white px-3 py-1.5 rounded-lg font-bold text-[11px] flex items-center gap-1.5 transition-all";
+                btnDesktop.className = "text-rose-200 hover:text-white px-3 py-1.5 rounded-lg font-bold text-[11px] flex items-center gap-1.5 transition-all";
+                showToast("Layout Smartphone caricato. Navigazione in stile App!");
+            } else {
+                viewport.className = "w-full";
+                const notch = document.getElementById('mobile-notch-id');
+                if (notch) notch.remove();
+                btnDesktop.className = "bg-amber-600 text-white px-3 py-1.5 rounded-lg font-bold text-[11px] flex items-center gap-1.5 transition-all";
+                btnMobile.className = "text-rose-200 hover:text-white px-3 py-1.5 rounded-lg font-bold text-[11px] flex items-center gap-1.5 transition-all";
+                showToast("Layout PC Desktop ripristinato!");
+            }
+        }
+
+        function navigateTo(pageId) {
+            document.getElementById('page-home').classList.add('hidden');
+            document.getElementById('page-profile').classList.add('hidden');
+            document.getElementById('page-valutatori').classList.add('hidden');
+
+            if (pageId === 'home') {
+                document.getElementById('page-home').classList.remove('hidden');
+                document.getElementById('demo-wrapper').scrollIntoView({ behavior: 'smooth' });
+            } else if (pageId === 'profile') {
+                document.getElementById('page-profile').classList.remove('hidden');
+                document.getElementById('demo-wrapper').scrollIntoView({ behavior: 'smooth' });
+            } else if (pageId === 'valutatori') {
+                document.getElementById('page-valutatori').classList.remove('hidden');
+                document.getElementById('demo-wrapper').scrollIntoView({ behavior: 'smooth' });
+            }
+        }
+
+        function highlightStep(stepNum) {
+            for (let i = 1; i <= 6; i++) {
+                const box = document.getElementById(`step-box-${i}`);
+                if (i === stepNum) {
+                    box.classList.add('border-amber-500', 'bg-rose-950/20');
+                } else {
+                    box.classList.remove('border-amber-500', 'bg-rose-950/20');
+                }
+            }
+            showToast(`Dettagli dello Step ${stepNum} sbloccati nella roadmap!`);
+        }
+
+        function selectAmount(amount) {
+            selectedDonationAmount = amount;
+            const btns = [20, 50, 100];
+            btns.forEach(b => {
+                const element = document.getElementById(`btn-amt-${b}`);
+                element.className = "border-2 border-rose-900/60 hover:border-amber-500 py-2.5 rounded-xl font-bold text-stone-300 text-xs transition-all focus:outline-none";
+            });
+            const activeBtn = document.getElementById(`btn-amt-${amount}`);
+            activeBtn.className = "border-2 border-amber-500 bg-rose-950/40 py-2.5 rounded-xl font-bold text-amber-400 text-xs transition-all focus:outline-none";
+        }
+
+        function switchPayMethod(method) {
+            currentPayMethod = method;
+            const btnCard = document.getElementById('pay-btn-card');
+            const btnPaypal = document.getElementById('pay-btn-paypal');
+            const cardArea = document.getElementById('card-details-area');
+            const paypalArea = document.getElementById('paypal-details-area');
+
+            if (method === 'paypal') {
+                btnPaypal.className = "bg-rose-950 text-amber-400 text-[10px] font-black py-1.5 rounded-lg transition-all";
+                btnCard.className = "text-stone-400 text-[10px] font-bold py-1.5 rounded-lg transition-all";
+                cardArea.classList.add('hidden');
+                paypalArea.classList.remove('hidden');
+            } else {
+                btnCard.className = "bg-rose-950 text-amber-400 text-[10px] font-black py-1.5 rounded-lg transition-all";
+                btnPaypal.className = "text-stone-400 text-[10px] font-bold py-1.5 rounded-lg transition-all";
+                paypalArea.classList.add('hidden');
+                cardArea.classList.remove('hidden');
+            }
+        }
+
+        function updateCardVisual() {
+            const nameInput = document.getElementById('card-name-input').value;
+            const numInput = document.getElementById('card-number-input').value;
+            const expInput = document.getElementById('card-exp-input').value;
+
+            document.getElementById('vcard-name').innerText = nameInput ? nameInput.toUpperCase() : "SIMONE POLETTO";
+            document.getElementById('vcard-number').innerText = numInput ? numInput : "•••• •••• •••• 4321";
+            document.getElementById('vcard-expiry').innerText = expInput ? expInput : "12/28";
+        }
+
+        function confirmDonation() {
+            if (currentPayMethod === 'card') {
+                const nameInput = document.getElementById('card-name-input').value;
+                const numInput = document.getElementById('card-number-input').value;
+                if (!nameInput || !numInput) {
+                    showToast("Attenzione: Inserisci intestatario e numero della carta di credito per la prova.");
+                    return;
+                }
+            }
+
+            const collectedElement = document.getElementById('crowdfund-collected');
+            let currentAmount = 15400;
+            let newAmount = currentAmount + selectedDonationAmount;
+            collectedElement.innerText = "€" + newAmount.toLocaleString('it-IT');
+            const percent = Math.min((newAmount / 20000) * 100, 100);
+            document.getElementById('crowdfund-bar').style.width = percent + "%";
+            document.getElementById('crowdfund-backers').innerText = "Sostenitori attivi: 143";
+            showToast(`Sostegno simulato di €${selectedDonationAmount} inviato con successo! Grazie!`);
+        }
+
+        function submitEvaluationSheet(e) {
+            e.preventDefault();
+            const charText = document.getElementById('eval-characters').value;
+            const plotText = document.getElementById('eval-plot').value;
+            const styleText = document.getElementById('eval-style').value;
+
+            if (charText.length < 100 || plotText.length < 100 || styleText.length < 100) {
+                showToast("Errore: Compila ogni campo inserendo dettagli approfonditi (minimo 100 caratteri).");
+                return;
+            }
+
+            showToast("Grande! Scheda di valutazione salvata con successo. Ti abbiamo accreditato €20,00!");
+            document.getElementById('evaluation-sheet-form').reset();
+            navigateTo('profile');
+        }
+
+        function toggleDropdown() {
+            const menu = document.getElementById('dropdownMenu');
+            const arrow = document.getElementById('dropdownArrow');
+            menu.classList.toggle('hidden');
+            arrow.classList.toggle('rotate-180');
+        }
+
+        function selectGenre(genre) {
+            const btn = document.getElementById('dropdownBtn');
+            btn.innerHTML = `
+                <span class="flex items-center gap-2">
+                    <i class="fa-solid fa-film text-amber-500"></i>
+                    Genere: ${genre}
+                </span>
+                <i id="dropdownArrow" class="fa-solid fa-chevron-down transition-transform duration-200"></i>
+            `;
+            toggleDropdown();
+            showToast(`Filtro autore impostato su: ${genre}`);
+        }
+
+        function openDocument(fileName) {
+            document.getElementById('modalTitle').innerText = `Visualizzatore PDF - S.I.A.E. N°: 83940`;
+            document.getElementById('documentName').innerText = fileName;
+            document.getElementById('pdfModal').classList.remove('hidden');
+        }
+
+        function closeModal() {
+            document.getElementById('pdfModal').classList.add('hidden');
+        }
+
+        function openValutazioniModal() {
+            document.getElementById('valutazioniModal').classList.remove('hidden');
+        }
+
+        function closeValutazioniModal() {
+            document.getElementById('valutazioniModal').classList.add('hidden');
+        }
+
+        function toggleLike(btn) {
+            const icon = btn.querySelector('i');
+            const countSpan = btn.querySelector('.like-count');
+            let currentCount = parseInt(countSpan.innerText);
+            if (icon.classList.contains('fa-regular')) {
+                icon.className = 'fa-solid fa-thumbs-up text-amber-500';
+                countSpan.innerText = currentCount + 1;
+            }
+        }
+
+        function openSmartTVModal() {
+            document.getElementById('smartTvModal').classList.remove('hidden');
+        }
+
+        function closeSmartTVModal() {
+            document.getElementById('smartTvModal').classList.add('hidden');
+        }
+
+        function playBeep(freq, duration) {
+            try {
+                const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+                const osc = audioCtx.createOscillator();
+                const gain = audioCtx.createGain();
+                osc.type = 'sine';
+                osc.frequency.setValueAtTime(freq, audioCtx.currentTime);
+                gain.gain.setValueAtTime(0.08, audioCtx.currentTime);
+                gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + duration);
+                osc.connect(gain);
+                gain.connect(audioCtx.destination);
+                osc.start();
+                osc.stop(audioCtx.currentTime + duration);
+            } catch (e) {
+                console.log("Audio non supportato", e);
+            }
+        }
+
+        function startCinematicIntro() {
+            tvTimeouts.forEach(t => clearTimeout(t));
+            tvTimeouts = [];
+
+            const poster = document.getElementById('tv-poster-layer');
+            const countdownLayer = document.getElementById('tv-countdown-layer');
+            const countdownNum = document.getElementById('tv-countdown-num');
+            const presentationLayer = document.getElementById('tv-presentation-layer');
+            const movieLayer = document.getElementById('tv-movie-layer');
+
+            poster.classList.add('hidden');
+            countdownLayer.classList.remove('hidden');
+            presentationLayer.classList.add('hidden');
+            movieLayer.classList.add('hidden');
+            
+            let count = 5;
+            playBeep(1000, 0.2);
+            countdownNum.innerText = count;
+
+            const interval = setInterval(() => {
+                count--;
+                if (count > 0) {
+                    playBeep(1000, 0.2);
+                    countdownNum.innerText = count;
+                } else {
+                    clearInterval(interval);
+                    playBeep(1200, 0.4);
+                    countdownLayer.classList.add('hidden');
+                    presentationLayer.classList.remove('hidden');
+                    
+                    tvTimeouts.push(setTimeout(() => {
+                        presentationLayer.classList.add('hidden');
+                        movieLayer.classList.remove('hidden');
+                        showToast("Proiezione di 'Arsenio' avviata!");
+                    }, 2500));
+                }
+            }, 1000);
+
+            tvTimeouts.push(interval);
+        }
+
+        function showToast(message) {
+            const toast = document.getElementById('toastNotification');
+            const toastMsg = document.getElementById('toastMessage');
+            toastMsg.innerText = message;
+            toast.classList.remove('hidden');
+            setTimeout(() => {
+                toast.classList.add('hidden');
+            }, 5000);
+        }
+    </script>
+</body>
+</html>
